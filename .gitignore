@@ -1,9 +1,11 @@
 .DS_Store
 node_modules
-/dist
-
+/client/dist
+/server/public/*
+/local/*
 
 # local env files
+.env
 .env.local
 .env.*.local
 
@@ -11,7 +13,6 @@ node_modules
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
 
 # Editor directories and files
 .idea
