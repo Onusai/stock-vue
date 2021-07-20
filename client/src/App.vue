@@ -1,5 +1,5 @@
 <template>
-  <div id="view">
+  <div id="viewport">
     <Home />
   </div>
 </template>
@@ -13,6 +13,7 @@ export default {
     Home
   }
 }
+
 </script>
 
 <style>
@@ -24,12 +25,14 @@ body,
   height: 100%;
 }
 
-#view {
+#viewport {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  background-color: #333940;
+  color: rgb(0, 0, 0);
+  font-size: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;

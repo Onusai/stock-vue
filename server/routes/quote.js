@@ -34,7 +34,6 @@ const parseNum = text => {
 const scrapeMW = async sym => {
     const url = `https://www.marketwatch.com/investing/stock/${sym}`;
     const main_html = await fetchHtml(url);
-    const news_html = await fetchHtml(`${url}/moreheadlines?channel=PressReleases`);
     
     let selector = cheerio.load(main_html);
 
@@ -43,6 +42,12 @@ const scrapeMW = async sym => {
         .find(".intraday__price > .value")
         .text()
     );
+
+    if (!price) {
+        console.log(`-invalid: ${sym}`);
+        return null;
+    }
+        
 
     const relVol = parseFloat(
         selector("body")
@@ -70,7 +75,7 @@ const scrapeMW = async sym => {
 
     const fpShorted = parseFloat(descData["% of Float Shorted"]);
     
-
+    const news_html = await fetchHtml(`${url}/moreheadlines?channel=PressReleases`);
     selector = cheerio.load(news_html);
 
     let news = [];
@@ -85,15 +90,19 @@ const scrapeMW = async sym => {
     
     news.pop();
 
-    return {price, float, avgVol, relVol, fpShorted, url, news};
+    return {sym, price, float, avgVol, relVol, fpShorted, url, news};
 }
 
 
 router.get('/:sym', (req, res) => {
     scrapeMW(req.params.sym)
     .then(data => {
+        
+        if (!data) return res.sendStatus(404);
+        
         res.json(data);
         console.log(`-$ ${req.params.sym.toUpperCase()}`)
+        
     });
 });
 
