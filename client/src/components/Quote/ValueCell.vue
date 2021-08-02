@@ -48,4 +48,11 @@ export default {
 .r {
     background-color: rgba(128, 0, 0, 0.253)  !important;
 }
+
+.h {
+    background-color: rgba(0, 0, 0, 0.377)  !important;
+    border-radius: 10px 10px 0px 0px;
+}
+
+
 </style>

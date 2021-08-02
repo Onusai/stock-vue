@@ -1,8 +1,13 @@
 <template>
-    <div id="quote-item">
+    <div id="quote-item" @click="quoteClicked">
         <ValueCell v-for="cell in cells" :key="cell.id" v-bind:data="cell"/>
-        <button id="delete-btn" type="button" @click="update">U</button>
-        <button id="delete-btn" type="button" @click="trash">D</button>
+        <div class="buttons" ref="buttons">
+            <button type="button" @click="openFV">F</button>
+            <button type="button" @click="openMW">M</button>
+            <button type="button" @click="update">U</button>
+            <button type="button" @click="trash">D</button>
+        </div>
+        
     </div>
 </template>
 
@@ -23,7 +28,20 @@ export default {
     },
     methods: {
         processData() {
-            /* sym, price, float, avgVol, relVol, fpShorted, url, news */
+            if (this.data.sym == "headers") {
+                this.cells = [];
+                let color = 'h';
+                this.cells.push({id:'sym', value:"Symbol", color});
+                this.cells.push({id: 'value', value:"Price", color});
+                this.cells.push({id: 'relVol', value:"Rel Vol", color});
+                this.cells.push({id: 'float', value:"Float", color});
+                this.cells.push({id: 'chgp', value:"Chg %", color});
+                this.cells.push({id: 'avgVol', value:"Avg Vol", color});
+                this.cells.push({id: 'shortInt', value:"Short %", color});
+                return;
+            }
+
+            /* sym, price, relVol, float, chgP, avgVol, fpShorted | url, news */
             this.cells = [];
             
             // sym
@@ -63,8 +81,12 @@ export default {
 
             // float
             let float = this.data.float.real;
+            let floatShort = this.data.float.short;
             color = 'w'
-            if (float < 10000000) {
+            if (float == null) {
+                floatShort = "N/A";
+                color = 'r';
+            } else if (float < 10000000) {
                 color = 'g';
             } else if (float < 20000000) {
                 color = 'yg';
@@ -73,7 +95,19 @@ export default {
             } else {
                 color = 'r';
             }
-            this.cells.push({id: 'float', value:this.data.float.short, color});
+            this.cells.push({id: 'float', value:floatShort, color});
+
+            // chg %
+            let chgp = this.data.chgp;
+            color = 'w'
+            if (chgp < 0) {
+                color = 'r';
+            } else if (chgp >= 40) {
+                color = 'g';
+            } else {
+                color = 'y';
+            }
+            this.cells.push({id: 'chgp', value:`${this.data.chgp}%`, color});
 
             // avg vol
             let avgVol = this.data.avgVol.short;
@@ -81,16 +115,35 @@ export default {
 
             // short %
             let shortInt = this.data.fpShorted;
+            if (shortInt == null) {
+                shortInt = "N/A";
+            }
             this.cells.push({id: 'shortInt', value:shortInt, color:'w'});
         },
         trash() {
-            this.$emit('trash-item', this.data.sym);
+            this.$emit('quote-signal', this.data.sym, 'trash');
         },
         update() {
-
+            this.$emit('quote-signal', this.data.sym, 'update')
+        },
+        quoteClicked() {
+            this.$emit('quote-signal', this.data.sym, 'clicked')
+        },
+        openFV() {
+            window.open(`https://finviz.com/quote.ashx?t=${this.data.sym}`, "_blank");	
+        },
+        openMW() {
+            window.open(`https://www.marketwatch.com/investing/stock/${this.data.sym}`, "_blank");	
         }
     },
     mounted() {
+        if (this.data.sym == "headers") {
+            let children = this.$refs.buttons.children;
+            for (var i = 0; i < children.length; i++) {
+                children[i].disabled = true;
+                children[i].classList.add("disabled")
+            }
+        }
         this.processData()
     },
     watch: {
@@ -109,12 +162,23 @@ export default {
     background-color: rgba(0, 0, 0, 0.199);
     display: flex;
     justify-content: space-between;
+    align-items: center;
     color: white;
 }
 
-#delete-btn {
+button {
     background-color: rgba(0, 0, 0, 0.199);
     border: rgb(87, 87, 87) 1px solid;
-    color: red;
+    color: rgb(170, 170, 170);
+    border-radius: 5px;
+    margin-left: 2px;
+}
+
+button:hover {
+    color: rgb(255, 255, 255);
+}
+
+.disabled {
+    opacity: 0%;
 }
 </style>

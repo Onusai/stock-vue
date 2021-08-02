@@ -1,6 +1,6 @@
 <template>
     <div id="quote-list">
-        <QuoteItem v-for="item in items" :key="item.sym" v-bind:data="item" @trash-item="trashItem"/>
+        <QuoteItem v-for="item in items" :key="item.sym" v-bind:data="item" @quote-signal="quoteSignal"/>
     </div>
 </template>
 
@@ -20,8 +20,8 @@ export default {
         }
     },
     methods: {
-        trashItem(sym) {
-            this.$emit('trash-item', sym);
+        quoteSignal(sym, action) {
+            this.$emit("quote-signal", sym, action)
         }
     }
 }

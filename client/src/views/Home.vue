@@ -1,8 +1,9 @@
 <template>
     <div class="page">
-        <InputBar @sym-entered="symEntered"/>
-        <QuoteDisplay v-bind:quotes="quotes" @trash-item="trashItem" />
-        <NewsBar v-bind:data="news" />
+        <InputBar @sym-entered="symEntered" @input-signal="inputSignal"/>
+        <QuoteDisplay v-bind:quotes="quotes" @quote-signal="quoteSignal"/>
+        <NewsBar v-bind:data="newsFV" source="Finviz"/>
+        <NewsBar v-bind:data="newsMW" source="MarketWatch"/>
     </div>
 </template>
 
@@ -26,14 +27,15 @@ export default {
                 good: {},
                 bad: {},
                 maybe: {},
-                staging: []
+                staging: [{sym:"headers", newsFV:[], newsMW:[]}]
             },
-            news: []
+            newsFV: [],
+            newsMW: []
         }
     },
     methods: {
         symEntered(sym) {
-            console.log(sym);
+            console.log("fetch " + sym);
 
             axios.get(`/api/quote/${sym}`)
                 .then(res => {
@@ -48,18 +50,53 @@ export default {
                     if (!exists) {
                         this.quotes.staging.push(res.data);
                     }
-                    this.news = res.data.news;
+                    this.newsFV = res.data.newsFV;
+                    this.newsMW = res.data.newsMW;
                 })
                 .catch(() => {
                     this.text = `Invalid SYM: ${this.text}`;
                 });
         },
-        trashItem(sym) {
-            console.log('here' + sym);
-            this.quotes.staging = this.quotes.staging.filter((value) => {
-                return value.sym != sym;
-            });
-        }
+        quoteSignal(sym, action) {
+            switch (action) {
+                case 'trash':
+                    this.quotes.staging = this.quotes.staging.filter((value) => {
+                        return value.sym != sym;
+                    });
+                    this.newsFV = [];
+                    this.newsMW = [];
+                    break;
+                case 'update':
+                    this.symEntered(sym)
+                    break;
+                case 'clicked':
+                    var sym_data = this.quotes.staging.filter((value) => {
+                        return value.sym == sym;
+                    });
+
+                    try {
+                        this.newsFV = sym_data[0].newsFV;
+                        this.newsMW = sym_data[0].newsMW;
+                    } catch {
+                        return
+                    }
+                    break;
+            }
+        },
+        inputSignal(action) {
+            switch (action) {
+                case 'trash-all':
+                    this.quotes.staging = [{sym:"headers", newsFV:[], newsMW:[]}];
+                    this.newsFV = [];
+                    this.newsMW = [];
+                    break;
+                case 'update-all':
+                    this.quotes.staging.slice(1).forEach(el => {
+                        this.symEntered(el.sym);
+                    });
+                    break;
+            }
+        },
     }
 }
 </script>
@@ -70,10 +107,11 @@ export default {
   width: 670px;
   height: 100%;
   display: grid;
-  grid-template: min-content 1fr min-content / auto;
+  grid-template: min-content 1fr min-content min-content/ auto;
 }
 
 #input, textarea {
     background: #55606b;
 }
+
 </style>>

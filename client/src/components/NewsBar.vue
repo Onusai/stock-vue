@@ -1,7 +1,8 @@
 <template>
-    <div id="news-bar">
+    <div id="news-bar" ref="newsbar">
+        <div class="news-header">{{ source }}</div>
         <div id="news-item" v-for="i in data" :key="i.sym">
-            {{ parseDate(i.timestamp) }} | <a :href="i.link">{{ i.headline }} </a>
+            {{ parseDate(i.timestamp) }} | <a :href="i.link" target="_blank">{{ i.headline }} </a>
         </div>
     </div>
 </template>
@@ -21,7 +22,7 @@ var rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' })
 
 export default {
     name: 'NewsBar',
-    props: ["data"],
+    props: ["data", "source"],
     data() {
         return {
             sym: ""
@@ -29,7 +30,11 @@ export default {
     },
     methods: {
         parseDate(timestamp) {
-            return this.getRelativeTime(new Date(timestamp), new Date());
+            let s = this.getRelativeTime(new Date(timestamp), new Date());
+            s = s.replace("seconds", "secs");
+            s = s.replace("minutes", "mins");
+            s = s.replace(" ago", "");
+            return s
         },
         getRelativeTime(d1, d2 = new Date()) {
             var elapsed = d1 - d2
@@ -37,6 +42,11 @@ export default {
             for (var u in units) 
                 if (Math.abs(elapsed) > units[u] || u == 'second') 
                     return rtf.format(Math.round(elapsed/units[u]), u)
+        }
+    },
+    watch: {
+        data() {
+            this.$refs.newsbar.scroll(0, 0);
         }
     }
 }
@@ -46,7 +56,7 @@ export default {
 <style scoped>
 #news-bar {
     width: 100%;
-    height: 180px;
+    height: 100px;
     background-color:rgb(55, 69, 83);
     overflow-y: scroll;
     display: flex;
@@ -66,11 +76,18 @@ export default {
 
 #news-item {
     margin-bottom: 5px;
+    padding: 0px 5px;
 }
 
 a {
     color: inherit; /* blue colors for links too */
   text-decoration: inherit; /* no underline */
+}
+
+.news-header {
+    background-color: rgba(0, 0, 0, 0.301);
+    padding: 0px 5px;
+    margin-bottom: 5px;
 }
 </style>
 

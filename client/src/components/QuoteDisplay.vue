@@ -8,7 +8,7 @@
             {{Object.keys(quotes.bad).length}}
         </pre>
         -->
-        <QuoteList v-bind:items="quotes.staging" @trash-item="trashItem"/>
+        <QuoteList v-bind:items="quotes.staging" @quote-signal="quoteSignal"/>
     </div>
 </template>
 
@@ -28,8 +28,8 @@ export default {
         }
     },
     methods: {
-        trashItem(sym) {
-            this.$emit('trash-item', sym);
+        quoteSignal(sym, action) {
+            this.$emit("quote-signal", sym, action)
         }
     }
 }
