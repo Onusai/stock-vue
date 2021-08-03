@@ -1,7 +1,7 @@
 <template>
-    <div id="news-bar" ref="newsbar">
+    <div class="news-bar" ref="newsbar">
         <div class="news-header">{{ source }}</div>
-        <div id="news-item" v-for="i in data" :key="i.sym">
+        <div class="news-item" v-for="i in data" :key="i.sym">
             {{ parseDate(i.timestamp) }} | <a :href="i.link" target="_blank">{{ i.headline }} </a>
         </div>
     </div>
@@ -54,7 +54,7 @@ export default {
 
 
 <style scoped>
-#news-bar {
+.news-bar {
     width: 100%;
     height: 100px;
     background-color:rgb(55, 69, 83);
@@ -65,16 +65,16 @@ export default {
     color: white !important;
 }
 
-#news-bar::-webkit-scrollbar {
+.news-bar::-webkit-scrollbar {
   display: none; /* Chrome, Safari and Opera */
 }
 
-#news-bar {
+.news-bar {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
 
-#news-item {
+.news-item {
     margin-bottom: 5px;
     padding: 0px 5px;
 }

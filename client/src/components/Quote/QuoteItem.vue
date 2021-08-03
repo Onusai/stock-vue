@@ -1,5 +1,5 @@
 <template>
-    <div id="quote-item" @click="quoteClicked">
+    <div class="quote-item" @click="quoteClicked">
         <ValueCell v-for="cell in cells" :key="cell.id" v-bind:data="cell"/>
         <div class="buttons" ref="buttons">
             <button type="button" @click="openFV">F</button>
@@ -156,7 +156,7 @@ export default {
 
 
 <style scoped>
-#quote-item {
+.quote-item {
     width: 100%;
     height: 30px;
     background-color: rgba(0, 0, 0, 0.199);

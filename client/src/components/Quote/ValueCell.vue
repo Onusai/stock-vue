@@ -1,5 +1,5 @@
 <template>
-    <div id="quote-item" :class="data.color">
+    <div class="quote-cell" :class="data.color">
         {{ data.value }}
     </div>
 </template>
@@ -20,8 +20,8 @@ export default {
 
 
 <style scoped>
-#quote-item {
-    max-width: 70px;
+.quote-cell {
+    width: 70px;
     height: 30px;
     background-color: rgba(0, 0, 0, 0.199);
     display: flex;
